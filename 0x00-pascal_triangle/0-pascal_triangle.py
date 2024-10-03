@@ -8,6 +8,9 @@ of integers representing the Pascal’s triangle of n:
 
 
 def pascal_triangle(n):
+    """
+    Construct the triangle
+    """
     if n <= 0:
         return []
     res = [[1]]
