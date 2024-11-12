@@ -1,41 +1,25 @@
 #!/usr/bin/node
-
 const request = require('request');
+const API_URL = 'https://swapi-api.hbtn.io/api';
 
-if (process.argv.length < 3) {
-  console.log("Usage: ./0-starwars_characters.js <Movie ID>");
-  process.exit(1);
-}
+if (process.argv.length > 2) {
+  request(`${API_URL}/films/${process.argv[2]}/`, (err, _, body) => {
+    if (err) {
+      console.log(err);
+    }
+    const charactersURL = JSON.parse(body).characters;
+    const charactersName = charactersURL.map(
+      url => new Promise((resolve, reject) => {
+        request(url, (promiseErr, __, charactersReqBody) => {
+          if (promiseErr) {
+            reject(promiseErr);
+          }
+          resolve(JSON.parse(charactersReqBody).name);
+        });
+      }));
 
-const movieId = process.argv[2];
-const url = `https://swapi.dev/api/films/${movieId}/`;
-
-// Fetch the film data based on the movie ID
-request(url, (error, response, body) => {
-  if (error) {
-    console.error("Error fetching movie:", error);
-    return;
-  }
-  
-  // Check if response status code is not 200
-  if (response.statusCode !== 200) {
-    console.error("Failed to retrieve the movie. Please check the movie ID.");
-    return;
-  }
-
-  const filmData = JSON.parse(body);
-  const characters = filmData.characters;
-
-  // Fetch each character name sequentially
-  characters.forEach((characterUrl) => {
-    request(characterUrl, (charError, charResponse, charBody) => {
-      if (charError) {
-        console.error("Error fetching character:", charError);
-        return;
-      }
-
-      const characterData = JSON.parse(charBody);
-      console.log(characterData.name);
-    });
+    Promise.all(charactersName)
+      .then(names => console.log(names.join('\n')))
+      .catch(allErr => console.log(allErr));
   });
-});
+}
