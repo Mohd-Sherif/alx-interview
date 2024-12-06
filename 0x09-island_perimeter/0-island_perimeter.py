@@ -9,6 +9,7 @@ def island_perimeter(grid):
     Island Perimeter Method
     """
     visit = set()
+    per = 0
 
     def dfs(i, j):
         if i >= len(grid) or j >= len(grid[i]) or \
