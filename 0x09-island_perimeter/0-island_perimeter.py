@@ -29,3 +29,12 @@ def island_perimeter(grid):
         for j in range(len(grid[i])):
             if grid[i][j]:
                 return dfs(i, j)
+    return 0
+
+if __name__ == "__main__":
+    grid = [
+        [0],
+        [0],
+        [0]
+    ]
+    print(island_perimeter(grid))
